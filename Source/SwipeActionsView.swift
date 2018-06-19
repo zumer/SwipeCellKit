@@ -218,6 +218,8 @@ class SwipeActionsView: UIView {
         }
         
         expansionAnimator?.startAnimation(afterDelay: timingParameters?.delay ?? 0)
+        (subviews.last as! SwipeActionButtonWrapperView).isExpanded = expanded
+
         
         notifyExpansion(expanded: expanded)
     }
@@ -267,7 +269,14 @@ class SwipeActionsView: UIView {
 class SwipeActionButtonWrapperView: UIView {
     let contentRect: CGRect
     var actionBackgroundColor: UIColor?
+    var expandedBackgroundColor: UIColor?
     
+    var isExpanded: Bool {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+
     init(frame: CGRect, action: SwipeAction, orientation: SwipeActionsOrientation, contentWidth: CGFloat) {
         switch orientation {
         case .left:
@@ -276,18 +285,36 @@ class SwipeActionButtonWrapperView: UIView {
             contentRect = CGRect(x: 0, y: 0, width: contentWidth, height: frame.height)
         }
         
+        isExpanded = false
         super.init(frame: frame)
         
+        if let backgroundColor = action.expandedBackgroundColor {
+            expandedBackgroundColor = backgroundColor
+        }
+
         configureBackgroundColor(with: action)
     }
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-            actionBackgroundColor.setFill()
-            context.fill(rect);
+//        if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+//            actionBackgroundColor.setFill()
+//            context.fill(rect);
+//        }
+        
+        if isExpanded {
+            if let expandedBackgroundColor = self.expandedBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+                expandedBackgroundColor.setFill()
+                context.fill(rect);
+            }
+        } else {
+            if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+                actionBackgroundColor.setFill()
+                context.fill(rect);
+            }
         }
+
     }
     
     func configureBackgroundColor(with action: SwipeAction) {
