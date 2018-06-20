@@ -12,7 +12,7 @@ import UIKit
 protocol Swipeable {
     var state: SwipeState { get set }
     
-    var actionsView: SwipeActionsView? { get set }
+    var actionsView: (UIView & SwipeActionsViewProtocol)? { get set }
     
     var frame: CGRect { get }
     

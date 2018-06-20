@@ -86,3 +86,33 @@ class RevealTransitionLayout: DragTransitionLayout {
         return super.visibleWidthsForViews(with: context).reversed()
     }
 }
+
+class RevealVerticalTransitionLayout: DragTransitionLayout {
+    
+    override func container(view: UIView, didChangeVisibleWidthWithContext context: ActionsViewLayoutContext) {
+        let width = context.minimumButtonWidth //* CGFloat(context.numberOfActions)
+        view.bounds.origin.x = (width - context.visibleWidth) * context.orientation.scale
+        //view.bounds.origin.x = (context.contentSize.width - context.visibleWidth) * context.orientation.scale
+    }
+    
+    override func layout(view: UIView, atIndex index: Int, with context: ActionsViewLayoutContext) {
+        
+        print("layout ", context.contentSize)
+        let height = context.contentSize.height / CGFloat(context.numberOfActions)
+        //view.frame.origin.x = context.visibleWidth / 2 //(CGFloat(index) * context.minimumButtonWidth) * context.orientation.scale
+        view.frame.origin.y = CGFloat(index-1) * height
+        
+        //view.frame.origin.x = context.minimumButtonWidth * context.orientation.scale
+        //view.frame.origin.y = (CGFloat(index) * 30) * context.orientation.scale
+    }
+    
+    //    override func visibleWidthsForViews(with context: ActionsViewLayoutContext) -> [CGFloat] {
+    //        return super.visibleWidthsForViews(with: context).reversed()
+    //    }
+    
+    override func visibleWidthsForViews(with context: ActionsViewLayoutContext) -> [CGFloat] {
+        //print ("", context.contentSize.width)
+        return (0..<context.numberOfActions)
+            .map({ _ in return CGFloat(max(0, min(context.minimumButtonWidth, context.visibleWidth))) })
+    }
+}

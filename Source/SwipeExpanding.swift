@@ -118,3 +118,60 @@ public struct ScaleAndAlphaExpansion: SwipeExpanding {
         }
     }
 }
+
+public struct ScaleAndColorExpansion: SwipeExpanding {
+    
+    /// Returns a `ScaleAndColorExpansion` instance with default expansion options.
+    public static var `default`: ScaleAndColorExpansion { return ScaleAndColorExpansion() }
+    
+    /// The duration of the animation.
+    public let duration: Double
+    
+    /// The scale factor used during animation.
+    public let scale: CGFloat
+    
+    /// The inter-button delay between animations.
+    public let interButtonDelay: Double
+    
+    public let backgroundColor: UIColor
+    
+    /**
+     Contructs a new `ScaleAndColorExpansion` instance.
+     
+     - parameter duration: The duration of the animation.
+     
+     - parameter scale: The scale factor used during animation.
+     
+     - parameter interButtonDelay: The inter-button delay between animations.
+     
+     - returns: The new `ScaleAndColorExpansion` instance.
+     */
+    public init(duration: Double = 0.15, scale: CGFloat = 0.8, interButtonDelay: Double = 0.1, backgroundColor: UIColor = UIColor.clear) {
+        self.duration = duration
+        self.scale = scale
+        self.interButtonDelay = interButtonDelay
+        self.backgroundColor = backgroundColor
+    }
+    
+    /// :nodoc:
+    public func animationTimingParameters(buttons: [UIButton], expanding: Bool) -> SwipeExpansionAnimationTimingParameters {
+        var timingParameters = SwipeExpansionAnimationTimingParameters.default
+        timingParameters.duration = 0.6
+        timingParameters.delay = expanding ? interButtonDelay : 0
+        return timingParameters
+    }
+    
+    /// :nodoc:
+    public func actionButton(_ button: UIButton, didChange expanding: Bool, otherActionButtons: [UIButton]) {
+        let buttons = expanding ? otherActionButtons : otherActionButtons.reversed()
+        
+        button.isSelected = expanding
+        
+        buttons.enumerated().forEach { index, button in
+            UIView.animate(withDuration: duration, delay: interButtonDelay * Double(expanding ? index : index + 1), options: [], animations: {
+                button.transform = expanding ? .init(scaleX: self.scale, y: self.scale) : .identity
+                button.alpha = expanding ? 0.0 : 1.0
+            }, completion: nil)
+        }
+    }
+}

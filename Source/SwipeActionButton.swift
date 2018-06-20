@@ -11,7 +11,8 @@ class SwipeActionButton: UIButton {
     var spacing: CGFloat = 8
     var shouldHighlight = true
     var highlightedBackgroundColor: UIColor?
-
+    //var expandedBackgroundColor : UIColor?
+    
     var maximumImageHeight: CGFloat = 0
     var verticalAlignment: SwipeVerticalAlignment = .centerFirstBaseline
     
@@ -45,20 +46,25 @@ class SwipeActionButton: UIButton {
         
         tintColor = action.textColor ?? .white
         let highlightedTextColor = action.highlightedTextColor ?? tintColor
+        let expandedTextColor = action.expandedTextColor ?? tintColor
         highlightedBackgroundColor = action.highlightedBackgroundColor ?? UIColor.black.withAlphaComponent(0.1)
-
+        //expandedBackgroundColor = action.expandedBackgroundColor ?? UIColor.black.withAlphaComponent(0.1)
+        
         titleLabel?.font = action.font ?? UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.medium)
         titleLabel?.textAlignment = .center
         titleLabel?.lineBreakMode = .byWordWrapping
-        titleLabel?.numberOfLines = 0
+        titleLabel?.numberOfLines = 1
         
         accessibilityLabel = action.accessibilityLabel
         
         setTitle(action.title, for: .normal)
         setTitleColor(tintColor, for: .normal)
         setTitleColor(highlightedTextColor, for: .highlighted)
+        setTitleColor(expandedTextColor, for: .selected)
+        
         setImage(action.image, for: .normal)
         setImage(action.highlightedImage ?? action.image, for: .highlighted)
+        setImage(action.expandedImage ?? action.image, for: .selected)
     }
     
     override var isHighlighted: Bool {

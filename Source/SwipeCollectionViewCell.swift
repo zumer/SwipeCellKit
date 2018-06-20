@@ -19,7 +19,7 @@ open class SwipeCollectionViewCell: UICollectionViewCell {
     public weak var delegate: SwipeCollectionViewCellDelegate?
     
     var state = SwipeState.center
-    var actionsView: SwipeActionsView?
+    var actionsView: (UIView & SwipeActionsViewProtocol)?
     var scrollView: UIScrollView? {
         return collectionView
     }

@@ -19,7 +19,7 @@ open class SwipeTableViewCell: UITableViewCell {
     public weak var delegate: SwipeTableViewCellDelegate?
     
     var state = SwipeState.center
-    var actionsView: SwipeActionsView?
+    var actionsView: (UIView & SwipeActionsViewProtocol)?
     var scrollView: UIScrollView? {
         return tableView
     }

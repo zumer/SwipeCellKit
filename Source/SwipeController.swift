@@ -194,7 +194,7 @@ class SwipeController: NSObject {
                 return
         }
 
-        let options = delegate?.swipeController(self, editActionsOptionsForSwipeableFor: orientation) ?? SwipeOptions()
+        let options : SwipeOptions = delegate?.swipeController(self, editActionsOptionsForSwipeableFor: orientation) ?? SwipeOptions()
         
         swipeable.actionsView?.removeFromSuperview()
         swipeable.actionsView = nil
@@ -209,12 +209,28 @@ class SwipeController: NSObject {
             }
         }
         
-        let actionsView = SwipeActionsView(contentEdgeInsets: contentEdgeInsets,
-                                           maxSize: swipeable.bounds.size,
-                                           safeAreaInsetView: scrollView,
-                                           options: options,
-                                           orientation: orientation,
-                                           actions: actions)
+        let classType = options.actionsClass
+        //classType
+        //type(of: classType)
+        
+        var actionsView : (UIView & SwipeActionsViewProtocol)
+        
+        if classType != nil {
+            actionsView = classType.unsafelyUnwrapped.init(contentEdgeInsets: contentEdgeInsets,
+                                                               maxSize: swipeable.bounds.size,
+                                                               safeAreaInsetView: scrollView,
+                                                               options: options,
+                                                               orientation: orientation,
+                                                               actions: actions) as! (UIView & SwipeActionsViewProtocol)
+        } else {
+            actionsView = SwipeActionsView(contentEdgeInsets: contentEdgeInsets,
+                                               maxSize: swipeable.bounds.size,
+                                               safeAreaInsetView: scrollView,
+                                               options: options,
+                                               orientation: orientation,
+                                               actions: actions)
+        }
+        
         actionsView.delegate = self
         
         actionsContainerView.addSubview(actionsView)
@@ -235,6 +251,8 @@ class SwipeController: NSObject {
         
         swipeable.state = .dragging
     }
+    
+    
     
     func animate(duration: Double = 0.7, toOffset offset: CGFloat, withInitialVelocity velocity: CGFloat = 0, completion: ((Bool) -> Void)? = nil) {
         stopAnimatorIfNeeded()
@@ -367,7 +385,7 @@ extension SwipeController: UIGestureRecognizerDelegate {
 }
 
 extension SwipeController: SwipeActionsViewDelegate {
-    func swipeActionsView(_ swipeActionsView: SwipeActionsView, didSelect action: SwipeAction) {
+    func swipeActionsView(_ swipeActionsView: SwipeActionsViewProtocol, didSelect action: SwipeAction) {
         perform(action: action)
     }
     
@@ -376,7 +394,7 @@ extension SwipeController: SwipeActionsViewDelegate {
         
         if action == actionsView.expandableAction, let expansionStyle = actionsView.options.expansionStyle {
             // Trigger the expansion (may already be expanded from drag)
-            actionsView.setExpanded(expanded: true)
+            actionsView.setExpanded(expanded: true, feedback: true)
             
             switch expansionStyle.completionAnimation {
             case .bounce:

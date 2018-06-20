@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol SwipeAnimator {
+public protocol SwipeAnimator {
     /// A Boolean value indicating whether the animation is currently running.
     var isRunning: Bool { get }
     
@@ -47,15 +47,15 @@ protocol SwipeAnimator {
 
 @available(iOS 10.0, *)
 extension UIViewPropertyAnimator: SwipeAnimator {
-    func addCompletion(completion: @escaping (Bool) -> Void) {
+    public func addCompletion(completion: @escaping (Bool) -> Void) {
         addCompletion { position in
             completion(position == .end)
         }
     }
 }
 
-class UIViewSpringAnimator: SwipeAnimator {
-    var isRunning: Bool = false
+public class UIViewSpringAnimator: SwipeAnimator {
+    public var isRunning: Bool = false
     
     let duration:TimeInterval
     let damping:CGFloat
@@ -64,7 +64,7 @@ class UIViewSpringAnimator: SwipeAnimator {
     var animations:(() -> Void)?
     var completion:((Bool) -> Void)?
     
-    required init(duration: TimeInterval,
+    public required init(duration: TimeInterval,
                   damping: CGFloat,
                   initialVelocity velocity: CGFloat = 0) {
         self.duration = duration
@@ -72,11 +72,11 @@ class UIViewSpringAnimator: SwipeAnimator {
         self.velocity = velocity
     }
     
-    func addAnimations(_ animations: @escaping () -> Void) {
+    public func addAnimations(_ animations: @escaping () -> Void) {
         self.animations = animations
     }
     
-    func addCompletion(completion: @escaping (Bool) -> Void) {
+    public func addCompletion(completion: @escaping (Bool) -> Void) {
         self.completion = { [weak self] finished in
             guard self?.isRunning == true else { return }
             
@@ -88,11 +88,11 @@ class UIViewSpringAnimator: SwipeAnimator {
         }
     }
     
-    func startAnimation() {
+    public func startAnimation() {
         self.startAnimation(afterDelay: 0)
     }
     
-    func startAnimation(afterDelay delay:TimeInterval) {
+    public func startAnimation(afterDelay delay:TimeInterval) {
         guard let animations = animations else { return }
         
         isRunning = true
@@ -106,7 +106,7 @@ class UIViewSpringAnimator: SwipeAnimator {
                        completion: completion)
     }
     
-    func stopAnimation(_ withoutFinishing: Bool) {
+    public func stopAnimation(_ withoutFinishing: Bool) {
         isRunning = false
     }
 }

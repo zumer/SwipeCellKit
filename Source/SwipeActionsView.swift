@@ -7,11 +7,35 @@
 
 import UIKit
 
-protocol SwipeActionsViewDelegate: class {
-    func swipeActionsView(_ swipeActionsView: SwipeActionsView, didSelect action: SwipeAction)
+public protocol SwipeActionsViewDelegate: class {
+    func swipeActionsView(_ swipeActionsView: SwipeActionsViewProtocol, didSelect action: SwipeAction)
 }
 
-class SwipeActionsView: UIView {
+public protocol SwipeActionsViewProtocol : class where Self: UIView {
+
+    init(contentEdgeInsets: UIEdgeInsets,
+         maxSize: CGSize,
+         safeAreaInsetView: UIView,
+         options: SwipeOptions,
+         orientation: SwipeActionsOrientation,
+         actions: [SwipeAction])
+    
+    var orientation: SwipeActionsOrientation { get }
+    var visibleWidth: CGFloat { get set }
+    var options: SwipeOptions { get }
+    var expanded: Bool { get }
+    func setExpanded(expanded: Bool, feedback: Bool)
+    var preferredWidth: CGFloat { get }
+    var expandableAction: SwipeAction? { get }
+    
+    func createDeletionMask() -> UIView
+    var minimumButtonWidth: CGFloat { get }
+    
+    weak var delegate: SwipeActionsViewDelegate? { get set }
+}
+
+
+class SwipeActionsView: UIView, SwipeActionsViewProtocol {
     weak var delegate: SwipeActionsViewDelegate?
     
     let transitionLayout: SwipeTransitionLayout
@@ -81,7 +105,7 @@ class SwipeActionsView: UIView {
         return options.expansionStyle != nil ? actions.last : nil
     }
     
-    init(contentEdgeInsets: UIEdgeInsets,
+    required init(contentEdgeInsets: UIEdgeInsets,
          maxSize: CGSize,
          safeAreaInsetView: UIView,
          options: SwipeOptions,
@@ -133,7 +157,6 @@ class SwipeActionsView: UIView {
         let maximum = options.maximumButtonWidth ?? (size.width - 30) / CGFloat(actions.count)
         let minimum = options.minimumButtonWidth ?? min(maximum, 74)
         minimumButtonWidth = buttons.reduce(minimum, { initial, next in max(initial, next.preferredWidth(maximum: maximum)) })
-        
         
         buttons.enumerated().forEach { (index, button) in
             let action = actions[index]
@@ -220,7 +243,6 @@ class SwipeActionsView: UIView {
         expansionAnimator?.startAnimation(afterDelay: timingParameters?.delay ?? 0)
         (subviews.last as! SwipeActionButtonWrapperView).isExpanded = expanded
 
-        
         notifyExpansion(expanded: expanded)
     }
     
@@ -269,7 +291,7 @@ class SwipeActionsView: UIView {
 class SwipeActionButtonWrapperView: UIView {
     let contentRect: CGRect
     var actionBackgroundColor: UIColor?
-    var expandedBackgroundColor: UIColor?
+//    var expandedBackgroundColor: UIColor?
     
     var isExpanded: Bool {
         didSet {
@@ -288,9 +310,9 @@ class SwipeActionButtonWrapperView: UIView {
         isExpanded = false
         super.init(frame: frame)
         
-        if let backgroundColor = action.expandedBackgroundColor {
-            expandedBackgroundColor = backgroundColor
-        }
+//        if let backgroundColor = action.expandedBackgroundColor {
+//            expandedBackgroundColor = backgroundColor
+//        }
 
         configureBackgroundColor(with: action)
     }
@@ -298,22 +320,22 @@ class SwipeActionButtonWrapperView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-//        if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-//            actionBackgroundColor.setFill()
-//            context.fill(rect);
-//        }
-        
-        if isExpanded {
-            if let expandedBackgroundColor = self.expandedBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-                expandedBackgroundColor.setFill()
-                context.fill(rect);
-            }
-        } else {
-            if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-                actionBackgroundColor.setFill()
-                context.fill(rect);
-            }
+        if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+            actionBackgroundColor.setFill()
+            context.fill(rect);
         }
+        
+//        if isExpanded {
+//            if let expandedBackgroundColor = self.expandedBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+//                expandedBackgroundColor.setFill()
+//                context.fill(rect);
+//            }
+//        } else {
+//            if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+//                actionBackgroundColor.setFill()
+//                context.fill(rect);
+//            }
+//        }
 
     }
     

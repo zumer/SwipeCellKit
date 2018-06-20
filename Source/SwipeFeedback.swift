@@ -7,8 +7,8 @@
 
 import UIKit
 
-final class SwipeFeedback {
-    enum Style {
+public final class SwipeFeedback {
+    public enum Style {
         case light
         case medium
         case heavy
@@ -26,7 +26,7 @@ final class SwipeFeedback {
     
     private var _feedbackGenerator: Any?
     
-    init(style: Style) {
+    public init(style: Style) {
         if #available(iOS 10.0.1, *) {
             switch style {
             case .light:
@@ -41,13 +41,13 @@ final class SwipeFeedback {
         }
     }
     
-    func prepare() {
+    public func prepare() {
         if #available(iOS 10.0.1, *) {
             feedbackGenerator?.prepare()
         }
     }
     
-    func impactOccurred() {
+    public func impactOccurred() {
         if #available(iOS 10.0.1, *) {
             feedbackGenerator?.impactOccurred()
         }

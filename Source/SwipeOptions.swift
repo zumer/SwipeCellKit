@@ -45,6 +45,10 @@ public struct SwipeOptions {
     /// The amount of space, in points, between the button image and the button title.
     public var buttonSpacing: CGFloat?
     
+    public var actionsClass: SwipeActionsViewProtocol.Type? //AnyClass
+    
+    //public var expanda3bleAction: SwipeAction?
+    
     /// Constructs a new `SwipeOptions` instance with default options.
     public init() {}
 }
@@ -59,6 +63,8 @@ public enum SwipeTransitionStyle {
     
     /// The visible action area sits behind the cell, pinned to the edge of the table/collection view, and is revealed as the cell is dragged aside.
     case reveal
+    
+    //case revealVertical
 }
 
 /// Describes which side of the cell that the action buttons will be displayed.
