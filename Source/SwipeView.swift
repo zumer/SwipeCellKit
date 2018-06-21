@@ -7,14 +7,13 @@
 
 import UIKit
 
-open class SwipeView: UIView {
+public class SwipeView: UIView {
     /// The object that acts as the delegate of the `SwipeTableViewCell`.
     public weak var delegate: SwipeTableViewCellDelegate?
     
     var state = SwipeState.center
-    //var actionsView: SwipeActionsView?
     var actionsView: (UIView & SwipeActionsViewProtocol)?
-    var scrollView: UIScrollView? {
+    public var scrollView: UIScrollView? {
         return tableView
     }
     var indexPath: IndexPath? {
@@ -33,11 +32,20 @@ open class SwipeView: UIView {
     var swipeController: SwipeController!
     var isPreviouslySelected = false
     
-    weak var tableViewCell: UITableViewCell?
-    weak var tableView: UITableView?
+    public weak var tableViewCell: UITableViewCell?
+    public weak var tableView: UITableView?
+//    {
+//        didSet {
+//            self.swipeController.scrollView = self.tableView
+//        }
+//    }
     
-    let swipeView: UIView
-    let actionsContainerView: UIView
+    //let swipeView: UIView
+    public var actionsContainerView: UIView? {
+        didSet {
+            configure()
+        }
+    }
     
     /// :nodoc:
     open override var frame: CGRect {
@@ -55,24 +63,22 @@ open class SwipeView: UIView {
         }
     }
 
-    public init( swipeView: UIView, actionsContainerView: UIView ) {
-        self.swipeView = swipeView
-        self.actionsContainerView = actionsContainerView
-        
-        super.init(frame: .zero)
-
-        configure()
-    }
+//    public init( swipeView: UIView, actionsContainerView: UIView ) {
+////        self.swipeView = swipeView
+////        self.actionsContainerView = actionsContainerView
+////
+////        super.init(frame: .zero)
+//
+////        configure()
+//    }
     
     /// :nodoc:
-    required public init?(coder aDecoder: NSCoder) {
-        
-        fatalError("init(coder:) has not been implemented")
-        
-//        super.init(coder: aDecoder)
+//    required public init?(coder aDecoder: NSCoder) {
 //
-//        configure()
-    }
+////        fatalError("init(coder:) has not been implemented")
+////        super.init(coder: aDecoder)
+////        configure()
+//    }
     
     deinit {
         tableView?.panGestureRecognizer.removeTarget(self, action: nil)
@@ -81,29 +87,32 @@ open class SwipeView: UIView {
     func configure() {
         clipsToBounds = false
         
-        swipeController = SwipeController(swipeable: self, actionsContainerView: self)
+        guard let actionsContainerView = self.actionsContainerView else { return }
+        
+        swipeController = SwipeController(swipeable: self, actionsContainerView: actionsContainerView)
         swipeController.delegate = self
+        swipeController.scrollView = tableView
     }
     
     /////////////////
-    override open func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        
-        var view: UIView = self
-        while let superview = view.superview {
-            view = superview
-            
-            if let tableView = view as? UITableView {
-                self.tableView = tableView
-                
-                swipeController.scrollView = tableView;
-                
-                tableView.panGestureRecognizer.removeTarget(self, action: nil)
-                tableView.panGestureRecognizer.addTarget(self, action: #selector(handleTablePan(gesture:)))
-                return
-            }
-        }
-    }
+//    override open func didMoveToSuperview() {
+//        super.didMoveToSuperview()
+//        
+//        var view: UIView = self
+//        while let superview = view.superview {
+//            view = superview
+//            
+//            if let tableView = view as? UITableView {
+//                self.tableView = tableView
+//                
+//                swipeController.scrollView = tableView;
+//                
+//                tableView.panGestureRecognizer.removeTarget(self, action: nil)
+//                tableView.panGestureRecognizer.addTarget(self, action: #selector(handleTablePan(gesture:)))
+//                return
+//            }
+//        }
+//    }
     
     // Override so we can accept touches anywhere within the cell's minY/maxY.
     // This is required to detect touches on the `SwipeActionsView` sitting alongside the
@@ -139,6 +148,8 @@ open class SwipeView: UIView {
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
+        guard let swipeController = self.swipeController else { return }
+        
         swipeController.traitCollectionDidChange(from: previousTraitCollection, to: self.traitCollection)
     }
     
@@ -149,12 +160,12 @@ open class SwipeView: UIView {
     }
     /////////////////
     
-    func reset() {
+    public func reset() {
         swipeController.reset()
         clipsToBounds = false
     }
     
-    func resetSelectedState() {
+    public func resetSelectedState() {
         if isPreviouslySelected {
             if let tableView = tableView, let tableViewCell = tableViewCell, let indexPath = tableView.indexPath(for: tableViewCell) {
                 tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)

@@ -35,7 +35,7 @@ public struct SwipeActionTransitioningContext {
     
     internal let wrapperView: UIView
     
-    internal init(actionIdentifier: String?, button: UIButton, newPercentVisible: CGFloat, oldPercentVisible: CGFloat, wrapperView: UIView) {
+    public init(actionIdentifier: String?, button: UIButton, newPercentVisible: CGFloat, oldPercentVisible: CGFloat, wrapperView: UIView) {
         self.actionIdentifier = actionIdentifier
         self.button = button
         self.newPercentVisible = newPercentVisible

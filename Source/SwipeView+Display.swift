@@ -12,7 +12,7 @@ extension SwipeView {
     /// The point at which the origin of the cell is offset from the non-swiped origin.
     public var swipeOffset: CGFloat {
         set { setSwipeOffset(newValue, animated: false) }
-        get { return swipeView.frame.midX - bounds.midX }
+        get { return self.frame.midX - bounds.midX }
     }
     
     /**

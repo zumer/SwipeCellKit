@@ -32,6 +32,9 @@ public protocol SwipeActionsViewProtocol : class where Self: UIView {
     var minimumButtonWidth: CGFloat { get }
     
     weak var delegate: SwipeActionsViewDelegate? { get set }
+    
+    var actions: [SwipeAction] { get }
+    var contentSize: CGSize { get }
 }
 
 
@@ -291,7 +294,7 @@ class SwipeActionsView: UIView, SwipeActionsViewProtocol {
 class SwipeActionButtonWrapperView: UIView {
     let contentRect: CGRect
     var actionBackgroundColor: UIColor?
-//    var expandedBackgroundColor: UIColor?
+    var expandedBackgroundColor: UIColor?
     
     var isExpanded: Bool {
         didSet {
@@ -310,9 +313,9 @@ class SwipeActionButtonWrapperView: UIView {
         isExpanded = false
         super.init(frame: frame)
         
-//        if let backgroundColor = action.expandedBackgroundColor {
-//            expandedBackgroundColor = backgroundColor
-//        }
+        if let backgroundColor = action.expandedBackgroundColor {
+            expandedBackgroundColor = backgroundColor
+        }
 
         configureBackgroundColor(with: action)
     }
@@ -320,22 +323,22 @@ class SwipeActionButtonWrapperView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-            actionBackgroundColor.setFill()
-            context.fill(rect);
-        }
-        
-//        if isExpanded {
-//            if let expandedBackgroundColor = self.expandedBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-//                expandedBackgroundColor.setFill()
-//                context.fill(rect);
-//            }
-//        } else {
-//            if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
-//                actionBackgroundColor.setFill()
-//                context.fill(rect);
-//            }
+//        if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+//            actionBackgroundColor.setFill()
+//            context.fill(rect);
 //        }
+        
+        if isExpanded {
+            if let expandedBackgroundColor = self.expandedBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+                expandedBackgroundColor.setFill()
+                context.fill(rect);
+            }
+        } else {
+            if let actionBackgroundColor = self.actionBackgroundColor, let context = UIGraphicsGetCurrentContext() {
+                actionBackgroundColor.setFill()
+                context.fill(rect);
+            }
+        }
 
     }
     
